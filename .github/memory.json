@@ -1,0 +1,23 @@
+{
+  "project": {
+    "name": "Skill Forge",
+    "stack": ["python"],
+    "repo_url": "https://github.com/Willzy14/Skill-Forge.git"
+  },
+  "modules": {},
+  "sessions": [
+    {
+      "date": "2026-05-13",
+      "summary": "Bootstrap — project structure, context files, git, GitHub",
+      "files_changed": ["Documentation/AI_CONTEXT.md", "Documentation/TOOLBOX.md", ".github/memory.json", ".github/ai-activity-log.md", ".github/copilot-instructions.md", ".gitignore"],
+      "pending": ["Design skill extraction approach", "Build extraction pipeline"]
+    }
+  ],
+  "decisions": [
+    {
+      "date": "2026-05-13",
+      "decision": "Separate project from YouTube Transcription — single responsibility",
+      "reason": "Transcription downloads and formats. Skill Forge extracts and structures. Clean boundary."
+    }
+  ]
+}
