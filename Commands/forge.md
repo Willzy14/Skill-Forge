@@ -79,16 +79,39 @@ python "$SF_PROJECT/Source/forge.py" validate "<staging-dir>"
 
 If validate reports FAIL, surface the errors and stop. If WARN only, list the warnings and continue.
 
-### 6. Report
+### 6. Dump the proposal into chat for review
 
-Tell the user:
-- How many skills were proposed
-- How many references in total
-- Staging directory path (so they can review)
-- Validation status (PASS / WARN with count / FAIL with count)
-- Next step: review `PROPOSED_SKILLS.md`, optionally move weak skills to `<staging-dir>/rejected/`, then run `/forge --promote "<staging-dir>"`
+After materialize/validate succeed, **read `<staging-dir>/PROPOSED_SKILLS.md` and output its full content into the chat.** This keeps the review loop fast — the user can scroll through the proposal inline without leaving the conversation.
 
-**Do NOT promote.** Promotion is always a separate explicit `/forge --promote` invocation.
+Format the output as:
+
+```
+---
+## Proposed Skills
+
+**Staging:** `<staging-dir>`
+**Validation:** PASS  (or  PASS with N WARNs  /  FAIL with N issues)
+**Summary:** N skills, M references total
+
+[full content of PROPOSED_SKILLS.md here, including the fenced JSON block at the bottom]
+
+---
+
+**Next:** reply with one of:
+- "promote" — install all skills as-is
+- "drop <skill-or-reference-slug>" — quarantine that one and the rest are kept
+- "edit <slug>: ..." — change something before promoting
+- "discard" — throw the whole proposal away
+```
+
+When the user replies with edits, modify the relevant files in `<staging-dir>/skills/<skill>/` directly (SKILL.md or `references/*.md`). For "drop X", move the folder/file to `<staging-dir>/rejected/`. Then re-run `forge validate` and re-dump the changed sections before promotion.
+
+When the user says "promote":
+1. Run `python "$SF_PROJECT/Source/forge.py" promote "<staging-dir>" --dry-run` first — show the plan
+2. Then run `python "$SF_PROJECT/Source/forge.py" promote "<staging-dir>"` (no `--force` unless they specifically said overwrite)
+3. Report what landed where
+
+**Do NOT auto-promote.** Promotion always requires an explicit "promote" from the user in chat — but everything before it should flow without friction.
 
 ### 7. Promote (separate invocation: `/forge --promote PATH`)
 
