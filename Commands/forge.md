@@ -116,9 +116,59 @@ When the user says "promote":
 ### 7. Promote (separate invocation: `/forge --promote PATH`)
 
 ```
-python "$SF_PROJECT/Source/forge.py" promote "<staging-dir>" [--dry-run] [--force]
+python "$SF_PROJECT/Source/forge.py" promote "<staging-dir>" [--dry-run] [--force] [--merge]
 ```
 
-`promote` runs validation first and aborts on FAIL. With `--dry-run`, it prints the action plan without writing. With `--force`, it backs up any existing skill of the same name to `Backup/Promoted Skills/YYYY-MM-DD HHMM/` before overwriting. Without `--force`, existing skills are skipped with a warning.
+**Default promote** (no `--merge`):
+- Validation runs first; FAIL aborts.
+- Existing skills with the same name are **skipped** with a warning.
+- `--force` backs up the existing skill to `Backup/Promoted Skills/YYYY-MM-DD HHMMSS/` then **overwrites**. (Use this when you want a clean replacement.)
+- Always `--dry-run` first; ask the user for explicit confirmation; then run real.
 
-Always run with `--dry-run` first to show the user the plan, then ask for explicit confirmation before running the real promote.
+### 8. Promote with merge (`/forge --promote PATH --merge`)
+
+Merge **combines** the staged skill with the live one — keeps references unique to live, adds references unique to staging, and asks the user to resolve any reference-slug collisions or description conflicts. Use this when a new transcript adds complementary knowledge to an existing skill rather than replacing it.
+
+**Always orchestrate via the chat — do not invoke `promote --merge` without `--report-json` first.**
+
+1. Run dry-run with JSON report:
+   ```
+   python "$SF_PROJECT/Source/forge.py" promote "<staging-dir>" --merge --dry-run --report-json > <staging-dir>/.merge_plan.json
+   ```
+2. Read the JSON. For each skill with `"needs_user_input": true`:
+   - **Reference collisions** (each entry under `references_collided` with `"needs_resolution": true`):
+     - Show the user the slug, the SHA256s, and both previews (`live_preview` + `staging_preview`).
+     - Ask: *"For `<slug>` — keep live, take staging, or rename staging (suggested: `<slug>-v2`)?"*
+     - Capture the answer as `"staging"`, `"live"`, or `"rename:<slug>"`. For rename, the suggested slug is `<slug>-v2`; if that already exists in the planned merge, fall through to `-v3`, `-v4`, etc. Accept a custom slug from the user too.
+   - **Description conflict** (`description_action == "needs-resolution"`):
+     - Show the user both descriptions inline.
+     - Ask: *"Use staging, use live, write a merged version yourself, or have me draft one?"*
+     - If "draft": Claude (you) propose a unified description ≤ 600 chars covering the union of techniques. Show it. Require explicit "yes, use that" before adding to the resolutions.
+3. Build the resolutions JSON. For a single skill:
+   ```json
+   {
+     "schema_version": 1,
+     "skill_name": "<name>",
+     "collisions": { "<slug>": "staging|live|rename:<new-slug>", ... },
+     "description": { "action": "use_staging|use_live|custom", "value": "<text if custom>" }
+   }
+   ```
+   For multiple skills with collisions, use the multi-skill form:
+   ```json
+   {
+     "<skill-name>": { "collisions": {...}, "description": {...} },
+     "<other-skill>": { ... }
+   }
+   ```
+   Write to `<staging-dir>/resolutions.json`.
+4. Run the real merge:
+   ```
+   python "$SF_PROJECT/Source/forge.py" promote "<staging-dir>" --merge --resolutions "<staging-dir>/resolutions.json"
+   ```
+5. Verify what landed:
+   - Live skill folder contains the union of references (collisions resolved per user choice).
+   - Backup folder exists at `Backup/Promoted Skills/<HHMMSS>/<skill-name>/` with the pre-merge live state.
+   - Version bumped in SKILL.md frontmatter.
+6. Report to the user: refs added, refs kept, collisions resolved (with how), description action, backup path.
+
+**Shortcut: `--merge --force`** skips the chat resolution and silently picks staging for every collision and description conflict. Use only when the user explicitly says *"take all from staging, force it"* — the dry-run will say `FORCE MERGE: N reference collisions will use staging versions` so they know what they're signing off on.

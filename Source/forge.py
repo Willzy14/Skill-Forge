@@ -217,6 +217,9 @@ def cmd_promote(args: argparse.Namespace) -> int:
         Path(args.staging_dir),
         force=args.force,
         dry_run=args.dry_run,
+        merge=args.merge,
+        resolutions_path=Path(args.resolutions) if args.resolutions else None,
+        report_json=args.report_json,
     )
 
 
@@ -287,8 +290,11 @@ def main() -> int:
 
     p_prom = sub.add_parser("promote", help="Promote validated skills to ~/.claude/skills/")
     p_prom.add_argument("staging_dir")
-    p_prom.add_argument("--force", action="store_true", help="Overwrite existing skills (backup first)")
+    p_prom.add_argument("--force", action="store_true", help="Overwrite existing skills (backup first). With --merge, auto-resolves collisions in favour of staging.")
     p_prom.add_argument("--dry-run", action="store_true", help="Preview without writing")
+    p_prom.add_argument("--merge", action="store_true", help="For existing skills, combine instead of skip/overwrite")
+    p_prom.add_argument("--resolutions", help="Path to a JSON file with merge resolutions (implies --merge)")
+    p_prom.add_argument("--report-json", action="store_true", help="Emit a structured JSON report to stdout")
     p_prom.set_defaults(func=cmd_promote)
 
     p_sync = sub.add_parser("sync-command", help="Sync Commands/forge.md to global locations")
