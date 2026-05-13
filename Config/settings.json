@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "default_granularity": "medium",
+  "min_references_per_skill": 3,
+  "max_references_per_skill": 15,
+  "skill_name_prefix": "",
+  "description_min_chars": 60,
+  "description_max_chars": 600,
+  "description_prefix": "This skill should be used when",
+  "reference_body_min_chars": 80,
+  "transcript_min_segments": 1,
+  "transcript_min_chars": 2000
+}

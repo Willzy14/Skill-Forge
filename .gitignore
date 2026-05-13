@@ -9,6 +9,13 @@ __pycache__/
 # Environment
 .env
 
+# Skill Forge staging and backups
+Output/
+Backup/
+
+# Machine-specific config
+Config/local.settings.json
+
 # OS
 .DS_Store
 Thumbs.db
