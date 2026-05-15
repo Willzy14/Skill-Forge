@@ -9,5 +9,5 @@
   "description_prefix": "This skill should be used when",
   "reference_body_min_chars": 80,
   "transcript_min_segments": 1,
-  "transcript_min_chars": 2000
+  "transcript_min_chars": 500
 }

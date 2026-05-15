@@ -58,19 +58,22 @@ python Source/forge.py sync-command
 
 ## Current State
 - Pipeline fully functional and tested end-to-end
-- `forge doctor` reports 10/10 PASS
+- `forge doctor` reports 10/10 PASS (WARN for local.settings.json, FAIL for YouTube Transcription project path — both non-blocking for inline transcripts)
 - `/forge` global skill installed in `~/.claude/commands/` + brain folders
 - First successful extraction: Donut Finale transcript -> 2 skills (`blender-lighting`, `blender-rendering`) with 17 references total
-- Skills promoted to `~/.claude/skills/` and ready for Claude auto-discovery
+- Second successful extraction: Max Hay "Wet Concrete Textures" -> 1 skill (`blender-reflective-surfaces`) with 7 references
+- Skills promoted to `~/.claude/skills/` which is now **symlinked to Dropbox** (`Claude Code Brain/skills/`) for cross-machine sync
+- Forge can accept inline transcripts (saved to `Input/` folder) — doesn't require YouTube Transcription project
 - Hard staging/promotion boundary working (extract writes ONLY to Output/; promote is separate explicit step)
 - Validation catches over-long descriptions (caught one on first run; iterated and re-validated)
 - Backup-on-overwrite with `YYYY-MM-DD HHMM` timestamps tested via dry-run
+- `SYMLINK_SETUP.md` created in Dropbox Claude Code Brain folder with Mac/Windows symlink instructions
 
 ## What's Next
-1. **Discovery test** — fresh chat: "I'm lighting a concrete dam at golden hour" — does Claude reference `blender-lighting`?
-2. Iterate the extraction prompt if discovery is weak
-3. Batch-process the remaining 7 donut transcripts (`/forge --channel "Blender Guru"`)
-4. Try a non-Blender domain — e.g. a mixing tutorial — to validate the prompt works domain-agnostic
+1. **Batch-process remaining donut transcripts** — `/forge --channel "Blender Guru"` for the other 7 videos
+2. **Process more Max Hay tutorials** — proven source of high-quality Blender techniques
+3. Try a non-Blender domain — e.g. a mixing tutorial — to validate the prompt works domain-agnostic
+4. Set up Mac symlinks using `SYMLINK_SETUP.md` instructions so both machines share skills
 
 ## Key Decisions
 - **Separate project from YouTube Transcription** — transcription has one job (download + format), this has another (extract + structure). Clean separation.
@@ -80,6 +83,8 @@ python Source/forge.py sync-command
 - **Output Claude skills (not Cortex)** — pivoted from original plan after user feedback. The pipeline produces SKILL.md + references/*.md folders in the format Claude Code auto-discovers via `name`/`description` frontmatter matching.
 - **Hierarchy is mandatory** — overview clusters become top-level skills, granular techniques are reference files nested inside. Never flat 80-skill discovery pool.
 - **Promote runs validate first** — fails closed on any FAIL. Validation WARNs about existing-promoted-skill, only `promote --force` overwrites (with backup).
+- **Skills live in Dropbox** — `~/.claude/skills/` is symlinked to `Claude Code Brain/skills/` in Dropbox. Promotes land in Dropbox automatically and sync across all machines. No config change needed in forge — it writes to `~/.claude/skills/` which resolves through the symlink.
+- **Inline transcripts accepted** — forge can process transcripts saved directly to `Input/<channel>/` when the YouTube Transcription project isn't configured. Transcript must use `[HH:MM:SS] text` segment format and metadata table.
 
 ## Connections
 - **YouTube Transcription** — upstream. Provides the raw transcript files this project consumes.

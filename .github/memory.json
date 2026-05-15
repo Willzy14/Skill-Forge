@@ -11,6 +11,12 @@
       "summary": "Bootstrap — project structure, context files, git, GitHub",
       "files_changed": ["Documentation/AI_CONTEXT.md", "Documentation/TOOLBOX.md", ".github/memory.json", ".github/ai-activity-log.md", ".github/copilot-instructions.md", ".gitignore"],
       "pending": ["Design skill extraction approach", "Build extraction pipeline"]
+    },
+    {
+      "date": "2026-05-15",
+      "summary": "Extracted blender-reflective-surfaces skill from Max Hay YouTube tutorial. Symlinked ~/.claude/skills/ to Dropbox for cross-machine sync.",
+      "files_changed": ["Input/Max Hay/How To Make Realistic Wet Concrete Textures In Blender.md", "Output/max-hay/how-to-make-realistic-wet-concrete-textu-dEybjA6G5Lg/*"],
+      "pending": ["Set up Mac symlinks", "Batch process remaining Blender Guru transcripts"]
     }
   ],
   "decisions": [
@@ -18,6 +24,11 @@
       "date": "2026-05-13",
       "decision": "Separate project from YouTube Transcription — single responsibility",
       "reason": "Transcription downloads and formats. Skill Forge extracts and structures. Clean boundary."
+    },
+    {
+      "date": "2026-05-15",
+      "decision": "Skills dir symlinked to Dropbox Claude Code Brain/skills/ for cross-machine sync",
+      "reason": "Promotes land in Dropbox automatically. All machines with the symlink share the same skills. No forge config change needed."
     }
   ]
 }
