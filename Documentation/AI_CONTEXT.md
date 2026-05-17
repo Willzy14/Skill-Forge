@@ -68,12 +68,17 @@ python Source/forge.py sync-command
 - Validation catches over-long descriptions (caught one on first run; iterated and re-validated)
 - Backup-on-overwrite with `YYYY-MM-DD HHMM` timestamps tested via dry-run
 - `SYMLINK_SETUP.md` created in Dropbox Claude Code Brain folder with Mac/Windows symlink instructions
+- **179 global skills installed** across all categories (SEO, marketing, ads, social, YouTube, Blender, Spotify, unslop)
+- **Spotify MCP server** configured — code lives in Dropbox `Claude Code Brain/mcp-servers/`, .env credentials synced cross-machine
+- External skill scouting research saved to `Research/External Skill Scouting 2026-05-17.md` (on main)
 
 ## What's Next
 1. **Batch-process remaining donut transcripts** — `/forge --channel "Blender Guru"` for the other 7 videos
 2. **Process more Max Hay tutorials** — proven source of high-quality Blender techniques
 3. Try a non-Blender domain — e.g. a mixing tutorial — to validate the prompt works domain-agnostic
 4. Set up Mac symlinks using `SYMLINK_SETUP.md` instructions so both machines share skills
+5. **Custom skill gaps** — build skills for: OBS streaming, Beatport research, DAW mixing, DJ automation (no good open-source options found)
+6. **Spotify MCP first use** — test playlist creation/management after restart
 
 ## Key Decisions
 - **Separate project from YouTube Transcription** — transcription has one job (download + format), this has another (extract + structure). Clean separation.
